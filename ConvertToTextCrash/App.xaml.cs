@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Data.Html;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -28,6 +29,9 @@ namespace ConvertToTextCrash
         /// </summary>
         public App()
         {
+            Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
+                Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
+                Microsoft.ApplicationInsights.WindowsCollectors.Session);
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }
@@ -37,7 +41,7 @@ namespace ConvertToTextCrash
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
@@ -63,6 +67,25 @@ namespace ConvertToTextCrash
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
+                
+                try
+                {
+                    // Read 56KB and 333KB HTML file to text, then convert from HTML to plain text
+
+                    var HtmlFile56KB = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///HTMLPage1.html"));
+                    var HtmlFile333KB = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///HTMLPage2.html"));
+
+                    String HtmlText56KB = await Windows.Storage.FileIO.ReadTextAsync(HtmlFile56KB);
+                    String HtmlText333KB = await Windows.Storage.FileIO.ReadTextAsync(HtmlFile333KB);
+
+                    var Text56KB = HtmlUtilities.ConvertToText(HtmlText56KB);
+                    var Text333KB = HtmlUtilities.ConvertToText(HtmlText333KB); // this still works, no crash. >300KB is ok it seems.
+                }
+                catch (Exception exception)
+                {
+
+                    throw;
+                }
             }
 
             if (e.PrelaunchActivated == false)
