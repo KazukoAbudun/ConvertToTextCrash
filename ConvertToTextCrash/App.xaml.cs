@@ -67,19 +67,25 @@ namespace ConvertToTextCrash
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
-                
+
                 try
                 {
                     // Read 56KB and 333KB HTML file to text, then convert from HTML to plain text
 
                     var HtmlFile56KB = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///HTMLPage1.html"));
                     var HtmlFile333KB = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///HTMLPage2.html"));
+                    var HtmlFile200KB = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///HTMLPage3.html"));
+                    var HtmlFile238KB = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///HTMLPage4.html"));
 
                     String HtmlText56KB = await Windows.Storage.FileIO.ReadTextAsync(HtmlFile56KB);
                     String HtmlText333KB = await Windows.Storage.FileIO.ReadTextAsync(HtmlFile333KB);
+                    String HtmlText200KB = await Windows.Storage.FileIO.ReadTextAsync(HtmlFile200KB);
+                    String HtmlText238KB = await Windows.Storage.FileIO.ReadTextAsync(HtmlFile238KB);
 
                     var Text56KB = HtmlUtilities.ConvertToText(HtmlText56KB);
                     var Text333KB = HtmlUtilities.ConvertToText(HtmlText333KB); // this still works, no crash. >300KB is ok it seems.
+                    var Text200KB = HtmlUtilities.ConvertToText(HtmlText200KB); // That does not work.
+                    var Text238KB = HtmlUtilities.ConvertToText(HtmlText238KB); // That does not work.
                 }
                 catch (Exception exception)
                 {
